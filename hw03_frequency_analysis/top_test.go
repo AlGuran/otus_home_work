@@ -7,7 +7,7 @@ import (
 )
 
 // Change to true if needed.
-var taskWithAsteriskIsCompleted = false
+var taskWithAsteriskIsCompleted = true
 
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
@@ -78,5 +78,50 @@ func TestTop10(t *testing.T) {
 			}
 			require.Equal(t, expected, Top10(text))
 		}
+	})
+
+	// user tests
+
+	t.Run("short string", func(t *testing.T) {
+		expected := []string{
+			"short",  // 1
+			"string", // 1
+		}
+		require.Equal(t, expected, Top10("short string"))
+	})
+
+	t.Run("dash test", func(t *testing.T) {
+		expected := []string{
+			"-a-", // 1
+			"a-",  // 1
+			"a-a", // 1
+		}
+		require.Equal(t, expected, Top10("a- a-a -a- - - "))
+	})
+
+	t.Run("multi spaces", func(t *testing.T) {
+		expected := []string{
+			"contains", // 1
+			"many",     // 1
+			"spaces",   // 1
+			"text",     // 1
+			"this",     // 1
+		}
+		require.Equal(t, expected, Top10("This text    contains many  spaces"))
+	})
+
+	t.Run("low cases", func(t *testing.T) {
+		expected := []string{
+			"cases", // 2
+			"have",  // 2
+			"text",  // 2
+			"this",  // 2
+			"and",   // 1
+			"is",    // 1
+			"lower", // 1
+			"upper", // 1
+			"what",  // 1
+		}
+		require.Equal(t, expected, Top10("ThIs TEXt HaVe UPPER CASES and lower cases. WhAt thiS teXT HavE is?"))
 	})
 }
