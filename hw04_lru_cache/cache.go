@@ -57,8 +57,8 @@ func (lc *lruCache) Set(key Key, value interface{}) bool {
 }
 
 func (lc *lruCache) Get(key Key) (interface{}, bool) {
-	lc.mx.Lock()
-	defer lc.mx.Unlock()
+	lc.mx.RLock()
+	defer lc.mx.RUnlock()
 
 	item, ok := lc.items[key]
 
@@ -71,8 +71,8 @@ func (lc *lruCache) Get(key Key) (interface{}, bool) {
 }
 
 func (lc *lruCache) Clear() {
-	lc.mx.RLock()
-	defer lc.mx.RUnlock()
+	lc.mx.Lock()
+	defer lc.mx.Unlock()
 
 	lc.queue, lc.items = NewList(), make(map[Key]*ListItem)
 }
