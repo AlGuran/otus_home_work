@@ -11,9 +11,9 @@ type Stage func(in In) (out Out)
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	out := in
 	for _, stage := range stages {
-		out = func(in In, done In) Out {
-			bufferChannel := make(Bi)
-			go func(bufferChannel Bi) {
+		out = func(in In) Out {
+			bufferChannel := make(Bi, 1)
+			go func() {
 				defer close(bufferChannel)
 				for {
 					select {
@@ -32,9 +32,9 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 						bufferChannel <- v
 					}
 				}
-			}(bufferChannel)
+			}()
 			return bufferChannel
-		}(stage(out), done)
+		}(stage(out))
 	}
 	return out
 }
