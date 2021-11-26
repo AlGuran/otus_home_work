@@ -12,7 +12,7 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	out := in
 	for _, stage := range stages {
 		out = func(in In) Out {
-			bufferChannel := make(Bi, 1)
+			bufferChannel := make(Bi)
 			go func() {
 				defer close(bufferChannel)
 				for {
@@ -29,7 +29,11 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 						if !ok {
 							return
 						}
-						bufferChannel <- v
+						select {
+						case <-done:
+							return
+						case bufferChannel <- v:
+						}
 					}
 				}
 			}()
